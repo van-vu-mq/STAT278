@@ -1,5 +1,5 @@
 tic     % start timer
-%testestt
+
 % TO_DO LIST
 % apply logic for population age distribution ~ optional
 % simulate interaction with social network
@@ -19,21 +19,41 @@ tic     % start timer
     % second pass: assign remaining half from friend's social network
         % simulates people in a social clique
 % process data     
+age = 1;
+isSick = 2;
+isVaccinated = 3;
+friendCount = 4;
+sickDuration = 6;
+daysSick = 7;
+incubationPeriod = 8;
+hasSymptoms = 9;
+atHome = 10;
 
 
 %%%% setup
-simulationPeriod = 2;   % days
-populationSize = 15;    % 100k people takes ~30-60seconds, as of 6/May/19
+simulationPeriod = 1;   % days
+populationSize = 100;    % 100k people takes ~30-60seconds, as of 6/May/19
 
 populationList = generatePopulation(populationSize);
-socialNetwork = generateSocialNetwork(populationSize, populationList(:,4));
+socialNetwork = generateSocialNetwork(populationSize, populationList(:,friendCount));
 diseaseData = getDiseaseData();
+
+e1 = [];
+e2 = [];
+disp(sum(populationList(:,friendCount)));
+for p=1:populationSize
+    for f=1:populationList(p, friendCount)
+        
+    end
+end
+
+
 
 %%%% variable names to make reading code easier
 % keywords mapped to matrix column index
 
 %%%%%%%%%%%% Print to console for verifcation 
-display = 1;
+display = 0;
 if (display == 1)
     disp("Initial population data");
     disp(populationList);
@@ -41,12 +61,18 @@ if (display == 1)
 end
 
 %%%% model logic
+% if sick
+%     updatePatient
+%     if not home
+%         do interaction
+%         figure out who gets infected
+%         
 % key points / function calls are marked on left side next to line number
 for day=1:simulationPeriod
    
     for person=1:populationSize
         % if person is sick
-        if (populationList(person, 2) == 1)
+        if (populationList(person, isSick) == 1)
 % =====                 
             % update person
             % pass the person's data to function, replace with data given
@@ -54,8 +80,8 @@ for day=1:simulationPeriod
             populationList(person, :) = updateExistingPatient(populationList(person, :));
             
             % if person is not at home / is still interacting with people
-            if (populationList(person, 10) == 0)               
-                personNetworkSize = populationList(person, 4);
+            if (populationList(person, atHome) == 0)               
+                personNetworkSize = populationList(person, friendCount);
                 
                 % simulate interaction with friends
                 for friend=1:personNetworkSize
@@ -92,7 +118,9 @@ end
 %%%% Analyse data
 % graph, plot data, distribution fits, growth/decay analysis etc
 
-disp("Column labels");
-disp("1.Age, 2.isSick, 3.isVaccinated, 4.friendCount, 5.hospital");
-disp("6.sickDuration, 7.daysSick, 8.incubation, 9.symptoms, 10.atHome");
+if (display == 1)
+    disp("Column labels");
+    disp("1.Age, 2.isSick, 3.isVaccinated, 4.friendCount, 5.hospital");
+    disp("6.sickDuration, 7.daysSick, 8.incubation, 9.symptoms, 10.atHome");
+end
 toc     % lap timer
