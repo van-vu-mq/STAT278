@@ -31,8 +31,8 @@ atHome = 10;
 
 
 %%%% setup
-simulationPeriod = 3;   % days
-populationSize = 20;    % 100k people takes ~30-60seconds, as of 6/May/19
+simulationPeriod = 1;   % days
+populationSize = 20;    
 
 populationList = generatePopulation(populationSize);
 socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,friendCount));
@@ -41,8 +41,8 @@ diseaseData = getDiseaseData();
 % generate graph, highlight
 networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,friendCount), socialNetwork));
 highlightSick(networkGraph, socialNetwork, populationList(:,isSick));
-data = cell(simulationPeriod+1, 1);
-data{1} = populationList(:,isSick);
+diseaePropagationData = cell(simulationPeriod+1, 1);
+diseaePropagationData{1} = populationList(:,isSick);
 
 %%%% variable names to make reading code easier
 % keywords mapped to matrix column index
@@ -55,45 +55,34 @@ if (display == 1)
     %disp(socialNetwork);
 end
 
-%%%% model logic
-% if sick
-%     updatePatient
-%     if not home
-%         do interaction
-%         figure out who gets infected
-%         
-% key points / function calls are marked on left side next to line number
+%%%% model logic 
 for day=1:simulationPeriod
-   
+    
+    numberOfPeopleSick = sum(populationList(:, isSick));
+    listOfSickPeople = zeros(numberOfSickPeople, 1);
+    sickPeopleFound = 0;
+    
+    % find the sick people in the population
+    % only their interaction matters regarding disease spread
     for person=1:populationSize
-        % if person is sick
         if (populationList(person, isSick) == 1)
-% =====                 
-            % update person
-            % pass the person's data to function, replace with data given
-            % back       
+            % add sick person's ID to array to track
+            sickPeopleFound = sickPeopleFound + 1;
+            listOfSickPeople(sickPeopleFound) = person;
+            % update their info
             populationList(person, :) = updateExistingPatient(populationList(person, :));
-            
-            % if person is not at home / is still interacting with people
-            if (populationList(person, atHome) == 0)               
-                personNetworkSize = populationList(person, friendCount);
-                
-                % simulate interaction with friends
-                for friend=1:personNetworkSize
-                    % roll dice if friend catches the disease
-                    diceRoll = rand();
-                    % they lost the dice roll, lul
-                    if (diceRoll < diseaseData(1,1))
-                        friendIndex = socialNetwork(person, friend);
-% =====                             
-                        % update friend who is now sick
-                        populationList(friendIndex, :) = updateNewPatient(populationList(friendIndex, :));
-                    end 
-                end                               
-            end                
         end
     end
     
+    % all sick people found, determine who they have spread the disease to
+    newSickPeople = findNewPatients(populationList, listofSickPeople);
+    
+    % update info for people who have now contracted the disease
+    for person=1:length(newSickPeople)
+        sickPersonIndex = newSickPeople(person,1);
+        populationList(sickPersonIndex, :) = updateNewPatient(sickPersonIndex, :);
+    end
+
     %%%%%%%%%%%% display for simulation verification
     if (display == 1)
         disp("===================================================================================================");
@@ -107,7 +96,7 @@ for day=1:simulationPeriod
         % up considerable amount of RAM)
     % OR
     % write to a csv / text file to read later by another matlab program
-    data{day+1} = populationList(:, isSick);
+    diseaePropagationData{day+1} = populationList(:, isSick);
     
 end
 
