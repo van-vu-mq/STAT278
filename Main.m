@@ -79,8 +79,8 @@ for day=1:simulationPeriod
     
     % update info for people who have now contracted the disease
     for person=1:length(newSickPeople)
-        sickPersonIndex = newSickPeople(person,1);
-        populationList(sickPersonIndex, :) = updateNewPatient(sickPersonIndex, :);
+        newSickPersonIndex = newSickPeople(person,1);
+        populationList(newSickPersonIndex, :) = updateNewPatient(newSickPersonIndex, :);
     end
 
     %%%%%%%%%%%% display for simulation verification
