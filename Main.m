@@ -31,23 +31,18 @@ atHome = 10;
 
 
 %%%% setup
-simulationPeriod = 1;   % days
-populationSize = 100;    % 100k people takes ~30-60seconds, as of 6/May/19
+simulationPeriod = 3;   % days
+populationSize = 20;    % 100k people takes ~30-60seconds, as of 6/May/19
 
 populationList = generatePopulation(populationSize);
-socialNetwork = generateSocialNetwork(populationSize, populationList(:,friendCount));
+socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,friendCount));
 diseaseData = getDiseaseData();
 
-e1 = [];
-e2 = [];
-disp(sum(populationList(:,friendCount)));
-for p=1:populationSize
-    for f=1:populationList(p, friendCount)
-        
-    end
-end
-
-
+% generate graph, highlight
+networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,friendCount), socialNetwork));
+highlightSick(networkGraph, socialNetwork, populationList(:,isSick));
+data = cell(simulationPeriod+1, 1);
+data{1} = populationList(:,isSick);
 
 %%%% variable names to make reading code easier
 % keywords mapped to matrix column index
@@ -112,12 +107,12 @@ for day=1:simulationPeriod
         % up considerable amount of RAM)
     % OR
     % write to a csv / text file to read later by another matlab program
+    data{day+1} = populationList(:, isSick);
     
 end
 
 %%%% Analyse data
 % graph, plot data, distribution fits, growth/decay analysis etc
-
 if (display == 1)
     disp("Column labels");
     disp("1.Age, 2.isSick, 3.isVaccinated, 4.friendCount, 5.hospital");
