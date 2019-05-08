@@ -41,8 +41,8 @@ diseaseData = getDiseaseData();
 % generate graph, highlight
 networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,friendCount), socialNetwork));
 highlightSick(networkGraph, socialNetwork, populationList(:,isSick));
-diseaePropagationData = cell(simulationPeriod+1, 1);
-diseaePropagationData{1} = populationList(:,isSick);
+disesaePropagationData = cell(simulationPeriod+1, 1);
+disesaePropagationData{1} = populationList(:,isSick);
 
 %%%% variable names to make reading code easier
 % keywords mapped to matrix column index
@@ -58,7 +58,7 @@ end
 %%%% model logic 
 for day=1:simulationPeriod
     
-    numberOfPeopleSick = sum(populationList(:, isSick));
+    numberOfSickPeople = sum(populationList(:, isSick));
     listOfSickPeople = zeros(numberOfSickPeople, 1);
     sickPeopleFound = 0;
     
@@ -75,7 +75,7 @@ for day=1:simulationPeriod
     end
     
     % all sick people found, determine who they have spread the disease to
-    newSickPeople = findNewPatients(populationList, listofSickPeople);
+    newSickPeople = findNewPatients(populationList, listOfSickPeople);
     
     % update info for people who have now contracted the disease
     for person=1:length(newSickPeople)
@@ -96,7 +96,7 @@ for day=1:simulationPeriod
         % up considerable amount of RAM)
     % OR
     % write to a csv / text file to read later by another matlab program
-    diseaePropagationData{day+1} = populationList(:, isSick);
+    disesaePropagationData{day+1} = populationList(:, isSick);
     
 end
 
