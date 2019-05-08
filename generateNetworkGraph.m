@@ -14,6 +14,4 @@ end
 
 
 networkGraph = graph(startNode, endNode);
-plot(networkGraph);
-
 end
