@@ -21,7 +21,7 @@ atHome = 10;
 
 %%%% setup
 simulationPeriod = 1;   % days
-populationSize = 15;    
+populationSize = 20;    % 2.6seconds per 10k people as at 9/May/19
 
 populationList = generatePopulation(populationSize);
 socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
