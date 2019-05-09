@@ -3,6 +3,9 @@ function diseaseData = getDiseaseData()
 % behaviour
 
 
+% data indexing
+rashesIncubation = 2;
+
 
 %%%%
 % row 1: mean
@@ -15,13 +18,19 @@ diseaseData = zeros(2, varCount);
 diseaseData(1, 1) = 1;
 diseaseData(2, 1) = 0;
 
-% % Incubation period 
-% % Number of days it takes for symptoms to appear
-% diseaseData(1, 2) = 5;
-% diseaseData(2, 2) = 1;
+% Incubation period - rashes
+% Number of days it takes for rashes to appear. LogNormal distribution
+% mu, sigma, calculated for a log-normal distribution
+m = 14; % mean
+v = 4; % variance
+mu = log((m^2)/sqrt(v+m^2));
+sigma = sqrt(log(v/(m^2)+1));
+
+diseaseData(1, rashesIncubation) = mu;
+diseaseData(2, rashesIncubation) = sigma;
 
 % Live time / how long a person stays sick
-% mean, std / mu, sigma
+% mu, sigma
 diseaseData(1, 3) = 20;
 diseaseData(2, 3) = 5;
 
