@@ -11,6 +11,7 @@ function personData = getPersonData(populationSize)
 %   while a developed nation's popuation might be bimodal
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
+age = 1;
 
 
 %%%% parameters of a person unless otherwise specified
@@ -22,13 +23,8 @@ personData = zeros(2, varCount);
 % age
 % min and max age
 % consider using real population data
-personData(1, 1) = 1;
-personData(2, 1) = 100;
-
-% If the person is currently sick
-% default = 0 
-% boolean. 0 = not sick, 1 = is sick
-personData(1, 2) = 0;
+personData(1, age) = 1;
+personData(2, age) = 100;
 
 % Whether person is vaccinated (efficacy is defined under diseaseData)
 % mean, std
