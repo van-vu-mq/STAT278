@@ -3,22 +3,11 @@ tic     % start timer
 % TO_DO LIST
 % apply logic for population age distribution ~ optional
 % simulate interaction with social network
-% simulation disease spread
-    % which friends get sick
-    % do people die / get removed from the population pool
-% simluation behavour when sick
-    % stay home
-    % get treatment
-% add in costs of medical treatment, etc
-% add social interaction complexity
-    % currently, sick person will interact with every person they know
-    % add a variable/range to randomise how many people from their social
-    % circle they will interact with
-% add a more realistics friend network, currently it is entirely random.
-    % first pass: assign half of friends randomly 
-    % second pass: assign remaining half from friend's social network
-        % simulates people in a social clique
-% process data     
+% function: findNewPatient()
+% update generateSocialNetwork
+    % cluster format
+% process data    
+
 age = 1;
 isSick = 2;
 isVaccinated = 3;
@@ -41,8 +30,8 @@ diseaseData = getDiseaseData();
 % generate graph, highlight
 networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,friendCount), socialNetwork));
 highlightSick(networkGraph, socialNetwork, populationList(:,isSick));
-disesaePropagationData = cell(simulationPeriod+1, 1);
-disesaePropagationData{1} = populationList(:,isSick);
+diseasePropagationData = cell(simulationPeriod+1, 1);
+diseasePropagationData{1} = populationList(:,isSick);
 
 %%%% variable names to make reading code easier
 % keywords mapped to matrix column index
@@ -96,7 +85,7 @@ for day=1:simulationPeriod
         % up considerable amount of RAM)
     % OR
     % write to a csv / text file to read later by another matlab program
-    disesaePropagationData{day+1} = populationList(:, isSick);
+    diseasePropagationData{day+1} = populationList(:, isSick);
     
 end
 
