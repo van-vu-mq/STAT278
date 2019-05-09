@@ -11,7 +11,7 @@ tic     % start timer
 age = 1;
 isSick = 2;
 isVaccinated = 3;
-friendCount = 4;
+socialNetworkSize = 4;
 sickDuration = 6;
 daysSick = 7;
 incubationPeriod = 8;
@@ -21,14 +21,22 @@ atHome = 10;
 
 %%%% setup
 simulationPeriod = 1;   % days
-populationSize = 20;    
+populationSize = 21;    
 
 populationList = generatePopulation(populationSize);
-socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,friendCount));
+socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
 diseaseData = getDiseaseData();
 
+% In case no one is sick in the initial population
+% Forcibly makes 1 person sick
+% Sometimes happens for small population size
+if (sum(populationList(:, isSick) == 0))
+    personIndex = randi(populationSize, 1, 1);
+    populationList(personIndex, :) = updateNewPatient(populationList(personIndex, :));
+end
+
 % generate graph, highlight
-networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,friendCount), socialNetwork));
+networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork));
 highlightSick(networkGraph, socialNetwork, populationList(:,isSick));
 diseasePropagationData = cell(simulationPeriod+1, 1);
 diseasePropagationData{1} = populationList(:,isSick);
