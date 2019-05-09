@@ -2,6 +2,18 @@ function population = generatePopulation(populationSize)
 % Generates a matrix 
     % 1 row per person
     % 1 column per variable to describe the person
+    
+% repeatable random generation for testing
+rng default
+    
+% Population properties
+startingSick = 0.1;
+startingVaccinated = 0;
+
+%%%% initialise list
+varCount = 13;
+population = zeros(populationSize, varCount);
+
 
 % Variables:
 age = 1;
@@ -25,19 +37,6 @@ p_socialNetworkSize = 2;
 p_socialLevel = 3;
 p_visitHospital = 4;
 
-
-
-%%%% initialise list
-varCount = 13;
-population = zeros(populationSize, varCount);
-
-% Population elements
-startingSick = 0.1;
-startingVaccinated = 0;
-
-% repeatable random generation for testing
-rng default
-
 %%%% generate person data and insert into the list
 for person=1:populationSize
      %%%% Consider using real population data
@@ -60,16 +59,22 @@ for person=1:populationSize
          population(person, previouslyInfected) = 1;
      end
 
-     
      % determine the size/number of people in person's social network
      % assumed normally distributed
-     minSNSize = personDataRange(1, p_socialNetworkSize);
-     maxSNSize = personDataRange(2, p_socialNetworkSize);
-     population(person, socialNetworkSize) = ceil(randn()*(maxSNSize-minSNSize) + minSNSize);
+     mu = personDataRange(1, p_socialNetworkSize);
+     sigma = personDataRange(2, p_socialNetworkSize);
+     value = ceil(normrnd(mu, sigma));
+     % makes sure at least 1 connection
+     while (value < mu)
+         value = ceil(normrnd(mu, sigma));
+     end
+     population(person, socialNetworkSize) = value;
      
      % determine how many people person will interact with on a daily basis
      % social interaction will be with people drawn randomly from social
      % network
+     % uniformly distributed
+     % percentage of social network
      % ceil function to ensure max value is a whole number and is never 0;
      maxSL = ceil(personDataRange(2, p_socialLevel)*population(person, socialNetworkSize));
      population(person, socialLevel) = ceil(rand() * maxSL);
