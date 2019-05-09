@@ -1,48 +1,45 @@
 function personData = getPersonData(populationSize)
-% Returns the upper and lower bounds of variables that define a person
-% Used to randomise a person for simulation
+% Data store, data that describes the distribution of qualities of a
+% population
+% Used to randomise data that describes a person
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%   Note: these are only the bounds, they do not describe the distribution
-%
-%   e.g. age is a right skewed exponential distrubution for an 
-%   undeveloped nation
-%   while a developed nation's popuation might be bimodal
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Variables
+p_age = 1;
+p_socialNetworkSize = 2;
+p_socialLevel = 3;
+p_visitHospital = 4;
 
-age = 1;
-
-
-%%%% parameters of a person unless otherwise specified
-% row 1: lower bound || mean / mu
-% row 2: upper bound || standard deviantion / sigma 
-varCount = 5;
+varCount = 3;
 personData = zeros(2, varCount);
 
 % age
 % min and max age
 % consider using real population data
-personData(1, age) = 1;
-personData(2, age) = 100;
-
-% Whether person is vaccinated (efficacy is defined under diseaseData)
-% mean, std
-personData(1, 3) = 0.7;
-personData(2, 3) = 0.3;
+personData(1, p_age) = 1;
+personData(2, p_age) = 100;
 
 % Social network size / how many friends the person has
 % These are the people the person will interact with on a daily basis
 % min and max size of social circe
-personData(1, 4) = 1;
-% smaller value between 30 people vs 25% of population
-personData(2, 4) = min(floor(populationSize*0.25), 30);    
+personData(1, p_socialNetworkSize) = 1;
+% smaller value between 'max' people and 20% of population
+max = 20;
+personData(2, p_socialNetworkSize) = min(floor(populationSize*0.2), max);  
 
-% likihood that a person will visit the hospital given symptoms are
-% displayed 
+% How many people person will interact with on a daily basis
+% Social interaction will be with people drawn randomly from social
+% network
+% min, max as a percentage of socialNetworkSize
+personData(1, p_socialLevel) = 1;
+personData(2, p_socialLevel) = 0.2;
+
+% likelihood that a person will visit the hospital given symptoms are
+% displayed
+% may vary if stages and severity of symptoms are defined in the model
+    % e.g. cough/watery eyes > fever > rashes
 % mean, std
-personData(1, 5) = 0.5;
-personData(2, 5) = 0.5;
-
+personData(1, p_visitHospital) = 0.9;
+personData(2, p_visitHospital) = 0.1;
 
 end
