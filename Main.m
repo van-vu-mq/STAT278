@@ -21,7 +21,7 @@ atHome = 10;
 
 %%%% setup
 simulationPeriod = 1;   % days
-populationSize = 21;    
+populationSize = 15;    
 
 populationList = generatePopulation(populationSize);
 socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
