@@ -4,8 +4,10 @@ function diseaseData = getDiseaseData()
 
 
 % data indexing
-rashesIncubation = 2;
-
+infectionProbability = 1;
+incubationPeriod = 2;
+symptomaticPeriod = 3;
+fatalityRate = 4;
 
 %%%%
 % row 1: mean
@@ -13,31 +15,36 @@ rashesIncubation = 2;
 varCount = 4;
 diseaseData = zeros(2, varCount);
 
-% Infection rate, how likely it is to spread.
-% Percentage, s0-1
-diseaseData(1, 1) = 1;
-diseaseData(2, 1) = 0;
+% How likely an unvaccinated person is to contract the disease from a
+% carrier
+% Percentage, 0-1
+diseaseData(1, infectionProbability) = 0.95;
 
-% Incubation period - rashes
-% Number of days it takes for rashes to appear. LogNormal distribution
-% mu, sigma, calculated for a log-normal distribution
-m = 14; % mean
-v = 4; % variance
+% Incubation period
+% Number of days it takes for symptoms to appear. LogNormal distribution
+% log-normal distribution - values are calculated to match
+m = 10; % mean
+v = 4;  % variance
 mu = log((m^2)/sqrt(v+m^2));
 sigma = sqrt(log(v/(m^2)+1));
 
-diseaseData(1, rashesIncubation) = mu;
-diseaseData(2, rashesIncubation) = sigma;
+diseaseData(1, incubationPeriod) = mu;
+diseaseData(2, incubationPeriod) = sigma;
 
-% Live time / how long a person stays sick
-% mu, sigma
-diseaseData(1, 3) = 20;
-diseaseData(2, 3) = 5;
+
+% Duration of symptoms - correlated to the active period of the diease
+% Assumed log-normal distribution
+m = 10; % mean
+v = 2;  % variance
+mu = log((m^2)/sqrt(v+m^2));
+sigma = sqrt(log(v/(m^2)+1));
+diseaseData(1, symptomaticPeriod) = mu;
+diseaseData(2, symptomaticPeriod) = sigma;
 
 % Fatality rate
-% Percentage, 0-1
-diseaseData(1, 4) = 0.01;
-diseaseData(2, 4) = 0.001;
+% Percentage
+diseaseData(1, fatalityRate) = 0.003;
+
 
 
 end
