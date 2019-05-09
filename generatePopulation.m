@@ -4,20 +4,36 @@ function population = generatePopulation(populationSize)
     % 1 column per variable to describe the person
 
 % Variables:
-    % Age
-    %
-    % etc
+age = 1;
+isSick = 2;
+isVaccinated = 3;
+socialNetworkSize = 4;
+socialLevel = 5;
+hospitalVisit = 6;
+% sickDuration = 7;
+% daysSick = 8;
+% incubationPeriod = 9;
+hasSymptoms = 10;
+atHome = 11;
+previouslyInfected = 12;
 
 %%%% get bounds for data to describe a person 
 % using a matrix to reduce clutter of numerous variables
-personData = getPersonData(populationSize);
+personDataRange = getPersonData(populationSize);
+p_age = 1;
+p_socialNetworkSize = 2;
+p_socialLevel = 3;
+p_visitHospital = 4;
+
 
 
 %%%% initialise list
-varCount = 11;
+varCount = 13;
 population = zeros(populationSize, varCount);
 
+% Population elements
 startingSick = 0.1;
+startingVaccinated = 0;
 
 % repeatable random generation for testing
 rng default
@@ -25,44 +41,57 @@ rng default
 %%%% generate person data and insert into the list
 for person=1:populationSize
      %%%% Consider using real population data
-     % population age distributed along expontential curve
-     population(person, 1) = floor(random('Exponential',personData(2,1)*0.3));
+     % population age 
+     % distributed along expontential curve
+     mu = personDataRange(2,p_age)*0.3;    % 30percent of max age
+     population(person, age) = ceil(random('Exponential',mu));
      
-     % is currently sick
-     % 1 percent of the population starts out sick
-     population(person, 2) = rand() < startingSick;
+     % Seed vaccinated people into the population
+     population(person, isVaccinated) = rand() < startingVaccinated;
      
-     % is vaccinated
-     population(person, 3) = randn() < personData(1,3);
-     
-     % social network size
-     population(person, 4) = floor(rand()*(personData(2,4)-personData(1,4)) + personData(1,4));
-     
-     % hospital visit
-     population(person, 5) = -1;    % random value out of allowed range
-     while (population(person, 5) > 1 || population(person, 5) < 0)
-         population(person, 5) = normrnd(personData(1, 5), personData(2, 5))/2;
-     end
-     
-     % days person has been sick for
-     population(person, 6) = 0;
-     
-     % if sick
-     if (population(person, 2) == 1)
-         % expected duration of sickness 
+     % Seed sick people into the poplation
+     % might need to move this out of the loop, avoiding vaccinated people
+     % skews/reduces the number of seeded infected people
+     chance = rand();
+     % check that random person is not vaccinated
+     if (chance < startingSick && population(person,isVaccinated)==0)
+         population(person, isSick) = 1;
          population(person, :) = updateNewPatient(population(person,:));
+         population(person, previouslyInfected) = 1;
      end
+
+     
+     % determine the size/number of people in person's social network
+     % assumed normally distributed
+     minSNSize = personDataRange(1, p_socialNetworkSize);
+     maxSNSize = personDataRange(2, p_socialNetworkSize);
+     population(person, socialNetworkSize) = ceil(randn()*(maxSNSize-minSNSize) + minSNSize);
+     
+     % determine how many people person will interact with on a daily basis
+     % social interaction will be with people drawn randomly from social
+     % network
+     % ceil function to ensure max value is a whole number and is never 0;
+     maxSL = ceil(personDataRange(2, p_socialLevel)*population(person, socialNetworkSize));
+     population(person, socialLevel) = ceil(rand() * maxSL);
+     
+     
+     % probability person will visit the hospital given symptoms
+     % can increase as symptoms develop / increase in severity
+     % assumed normally distributed
+     mu = personDataRange(1, p_visitHospital);
+     sigma = personDataRange(2, p_visitHospital);
+     chance = normrnd(mu, sigma); % may exceed 1 ~ 100%
+     population(person, hospitalVisit) = chance;
+          
      
      % Displaying symptoms
-     population(person, 9) = 0;
+     population(person, hasSymptoms) = 0;
      
      % At home
-     population(person, 10) = 0;
-     
-     
-     
+     population(person, atHome) = 0;
+          
      %%%% index
-     population(person, 11) = person;
+     population(person, varCount) = person;
      
 end
 
