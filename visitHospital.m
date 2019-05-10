@@ -2,19 +2,9 @@ function personData = visitHospital(personData)
 % handles the logic, events and status updates for a person who visits the
 % hospital
 
-% column keywords
-
-% TO_DO
-% Everything
-    % diagnosis
-    % vaccinated
-    % treatment (reduce sick duration)
-    % cure (removes sickness)
-    % make patient stay home
-    % etc
-
+atHome = 11;
 
 % make person stay at home
-personData(1, 10) = 1;
+personData(1, atHome) = 1;
 
 end
