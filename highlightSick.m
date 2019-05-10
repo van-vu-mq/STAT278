@@ -1,6 +1,4 @@
 function socialNetwork = highlightSick(plottedGraph, socialNetwork, sickData)
-% Colours the nodes of 
-
 
 % Separate population into two groups, sick and not sick
 sickList = [1, sum(sickData)];
@@ -18,8 +16,16 @@ for person=1:length(sickData)
 end
 
 % colour sick people red
+% only colour if there are sick people
+% error occurs if we try with no sick
+if (sum(sickData) > 0)
+    highlight(plottedGraph, sickList, 'NodeColor', 'r');
+end
 % colour healthy people green
-highlight(plottedGraph, sickList, 'NodeColor', 'r');
-highlight(plottedGraph, notSickList, 'NodeColor', 'g');
+% only colour if there are healthy people
+% error occurs if we try with no healthy
+if (sum(sickData) < length(sickData))
+    highlight(plottedGraph, notSickList, 'NodeColor', 'g');
+end
 
 end
