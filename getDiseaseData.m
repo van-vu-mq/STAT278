@@ -18,7 +18,7 @@ diseaseData = zeros(2, varCount);
 % How likely an unvaccinated person is to contract the disease from a
 % carrier
 % Percentage, 0-1
-diseaseData(1, d_infectionProbability) = 0.95;
+diseaseData(1, d_infectionProbability) = 0.90;
 
 % Incubation period
 % Number of days it takes for symptoms to appear. LogNormal distribution
