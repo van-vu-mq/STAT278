@@ -25,19 +25,17 @@ atHome = 11;
 % Update day tracker
 personData(1, daysSick) = personData(1, daysSick) + 1;
 
-
 totalSickDuration = personData(1, incubationPeriod) + personData(1, symptomaticPeriod);
-if (personData(1, daysSick) > totalSickDuration)
+if (personData(1, daysSick) >= totalSickDuration)
     % Person has served their sickness sentence, they are fine now
     personData(1, isSick) = 0;
     personData(1, incubationPeriod) = 0;
     personData(1, symptomaticPeriod) = 0;
     personData(1, daysSick) = 0;
     personData(1, hasSymptoms) = 0;
-    
-elseif (personData(1, atHome == 0))
-    % person is still sick but not at home
-    
+
+elseif (personData(1, atHome) == 0)
+    % person is still sick and not at home (able to spread the disease)
     % check if person should be displaying symptoms 
     if (personData(1, daysSick) > personData(1, incubationPeriod))
         personData(1, hasSymptoms) = 1;
