@@ -61,17 +61,6 @@ startingInfected = 2;
 populationList = generatePopulation(populationSize);
 socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
 
-
-%===== Data store reach of the virus at any given point
-% row: person ID
-% column: day
-diseasePropagationData = zeros(populationSize, simulationPeriod+1);
-endOfDaySickCount = zeros(populationSize, 1);
-% store initial state of the population
-diseasePropagationData(:, 1) = populationList(:,isSick);
-endOfDaySickCount(1) = sum(populationList(:,isSick));
-
-
 %===== Seed in infected people
 for inf=1:startingInfected
     personIndex = randi(populationSize);
@@ -81,6 +70,15 @@ for inf=1:startingInfected
     end
     populationList(personIndex, :) = updateNewPatient(populationList(personIndex, :));
 end
+
+%===== Data store reach of the virus at any given point
+% row: person ID
+% column: day
+diseasePropagationData = zeros(populationSize, simulationPeriod+1);
+endOfDaySickCount = zeros(populationSize, 1);
+% store initial state of the population
+diseasePropagationData(:, 1) = populationList(:,isSick);
+endOfDaySickCount(1) = sum(populationList(:,isSick));
  
 %===== Generate graph
 if (displayGraphRuntime == 1)
@@ -122,8 +120,9 @@ for day=1:simulationPeriod
     %========= End of day ==========%
     %===============================%
     % update information of people sick at the beginning of the day
-    for person=1:listOfSickPeople
-        populationList(person, :) = updateExistingPatient(populationList(person, :));
+    for person=1:length(listOfSickPeople)
+        sickPersonID = listOfSickPeople(person);
+        populationList(sickPersonID, :) = updateExistingPatient(populationList(sickPersonID, :));
     end
    
     %===== process/log data
