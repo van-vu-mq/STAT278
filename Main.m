@@ -14,7 +14,7 @@ isVaccinated = 3;
 socialNetworkSize = 4;
 socialLevel = 5;
 hospitalVisit = 6;
-% sickDuration = 7;
+% symptomaticPeriod = 7;
 % daysSick = 8;
 % incubationPeriod = 9;
 hasSymptoms = 10;
@@ -23,7 +23,7 @@ previouslyInfected = 12;
 
 
 %%%% setup
-simulationPeriod = 1;   % days
+simulationPeriod = 10;   % days
 populationSize = 20;    % 2.6seconds per 10k people as at 9/May/19
 
 populationList = generatePopulation(populationSize);
@@ -33,27 +33,23 @@ diseaseData = getDiseaseData();
 % In case no one is sick in the initial population
 % Forcibly makes 1 person sick
 % Sometimes happens for small population size
-if (sum(populationList(:, isSick) == 0))
+if (sum(populationList(:, isSick))==0)
     personIndex = randi(populationSize, 1, 1);
     populationList(personIndex, :) = updateNewPatient(populationList(personIndex, :));
 end
 
-% generate graph, highlight
-networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork));
-highlightSick(networkGraph, socialNetwork, populationList(:,isSick));
+% create data store for diease spread over the population
 diseasePropagationData = cell(simulationPeriod+1, 1);
+% store initial state of the population
 diseasePropagationData{1} = populationList(:,isSick);
+% generate graph
+networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork));
+% colour the graph to reflect disease spread / population health
+highlightSick(networkGraph, socialNetwork, diseasePropagationData{1});
+
 
 %%%% variable names to make reading code easier
 % keywords mapped to matrix column index
-
-%%%%%%%%%%%% Print to console for verifcation 
-display = 0;
-if (display == 1)
-    disp("Initial population data");
-    disp(populationList);
-    %disp(socialNetwork);
-end
 
 %%%% model logic 
 for day=1:simulationPeriod
@@ -75,36 +71,21 @@ for day=1:simulationPeriod
     end
     
     % all sick people found, determine who they have spread the disease to
-    newSickPeople = findNewPatients(populationList, listOfSickPeople);
+    newSickPeople = findNewPatients(populationList, socialNetwork, listOfSickPeople);
     
     % update info for people who have now contracted the disease
     for person=1:length(newSickPeople)
-        newSickPersonIndex = newSickPeople(person,1);
-        populationList(newSickPersonIndex, :) = updateNewPatient(newSickPersonIndex, :);
+        newSickPersonIndex = newSickPeople(person);
+        populationList(newSickPersonIndex, :) = updateNewPatient(populationList(newSickPersonIndex, :));
     end
 
-    %%%%%%%%%%%% display for simulation verification
-    if (display == 1)
-        disp("===================================================================================================");
-        disp(">>>>> End of day results. Day:" + day);
-        disp(populationList);    
-    end
-    
-    %%%% process some data
-    % log/write to file etc
-    % we can either save data to a global variable (this method will take
-        % up considerable amount of RAM)
-    % OR
-    % write to a csv / text file to read later by another matlab program
+    %%%% process/log some data
+    % store the isSick column
     diseasePropagationData{day+1} = populationList(:, isSick);
     
 end
 
 %%%% Analyse data
 % graph, plot data, distribution fits, growth/decay analysis etc
-if (display == 1)
-    disp("Column labels");
-    disp("1.Age, 2.isSick, 3.isVaccinated, 4.friendCount, 5.hospital");
-    disp("6.sickDuration, 7.daysSick, 8.incubation, 9.symptoms, 10.atHome");
-end
+
 toc     % lap timer
