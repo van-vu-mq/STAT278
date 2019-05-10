@@ -23,11 +23,11 @@ previouslyInfected = 12;
 
 
 %%%% setup
-simulationPeriod = 50;   % days
-populationSize = 50;    % 2.6seconds per 10k people as at 9/May/19
+simulationPeriod = 100;   % days
+populationSize = 100;    % 2.6seconds per 10k people as at 9/May/19
 % only use for small number
 % for larger number, go to generatePopulation();
-startingInfected = 2;   
+startingInfected = 1;   
 
 populationList = generatePopulation(populationSize);
 socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
@@ -35,10 +35,10 @@ diseaseData = getDiseaseData();
 
 % seed in infected people
 for inf=1:startingInfected
-    personIndex = randi(populationSize, 1, 1);
+    personIndex = randi(populationSize);
     % check that random person is not vaccinated
     while (populationList(personIndex, isVaccinated) == 1 || populationList(personIndex, isSick) == 1)
-        personIndex = randi(populationSize, 1, 1);
+        personIndex = randi(populationSize);
     end
     populationList(personIndex, :) = updateNewPatient(populationList(personIndex, :));
 end
@@ -72,12 +72,10 @@ for day=1:simulationPeriod
             % add sick person's ID to array to track
             sickPeopleFound = sickPeopleFound + 1;
             listOfSickPeople(sickPeopleFound) = person;
-            % update their info
-            populationList(person, :) = updateExistingPatient(populationList(person, :));
         end
     end
     
-    % all sick people found, determine who they have spread the disease to
+    % determine who sick people have spread the disease to
     newSickPeople = findNewPatients(populationList, socialNetwork, listOfSickPeople);
     
     % update info for people who have now contracted the disease
@@ -85,10 +83,18 @@ for day=1:simulationPeriod
         newSickPersonIndex = newSickPeople(person);
         populationList(newSickPersonIndex, :) = updateNewPatient(populationList(newSickPersonIndex, :));
     end
-
+    
+    % end of day, update information of people who were sick at the
+    % beginning of the day
+    for person=1:listOfSickPeople
+        % update their info
+        populationList(person, :) = updateExistingPatient(populationList(person, :));
+    end
     %%%% process/log some data
     % store the isSick column
+    disp("End of day: " + day);
     diseasePropagationData(:, day+1) = populationList(:,isSick);
+    highlightSick(networkGraph, socialNetwork, diseasePropagationData(:, day+1));
 
 end
 
