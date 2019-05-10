@@ -27,7 +27,7 @@ personData(1, daysSick) = personData(1, daysSick) + 1;
 
 
 totalSickDuration = personData(1, incubationPeriod) + personData(1, symptomaticPeriod);
-if (daysSick >= totalSickDuration)
+if (personData(1, daysSick) > totalSickDuration)
     % Person has served their sickness sentence, they are fine now
     personData(1, isSick) = 0;
     personData(1, incubationPeriod) = 0;
