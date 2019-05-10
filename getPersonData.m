@@ -25,7 +25,7 @@ personData(2, p_age) = 100;
 % smaller value between 'mu' people and 20% of population
 targetMean = 30;
 mu = min(floor(populationSize*0.1), targetMean);
-sigma = ceil(mu*0.2);
+sigma = ceil(mu*0.20);
 personData(1, p_socialNetworkSize) = mu;
 personData(2, p_socialNetworkSize) = sigma;
 
@@ -34,14 +34,14 @@ personData(2, p_socialNetworkSize) = sigma;
 % network
 % min as value, max as a percentage of socialNetworkSize
 personData(1, p_socialLevel) = 1;
-personData(2, p_socialLevel) = 0.2;
+personData(2, p_socialLevel) = 0.10;
 
 % likelihood that a person will visit the hospital given symptoms are
 % displayed
 % may vary if stages and severity of symptoms are defined in the model
     % e.g. cough/watery eyes > fever > rashes
 % mean, std
-personData(1, p_visitHospital) = 0.9;
-personData(2, p_visitHospital) = 0.1;
+personData(1, p_visitHospital) = 0.95;
+personData(2, p_visitHospital) = 0.05;
 
 end
