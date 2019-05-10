@@ -23,29 +23,36 @@ previouslyInfected = 12;
 
 
 %%%% setup
-simulationPeriod = 10;   % days
-populationSize = 20;    % 2.6seconds per 10k people as at 9/May/19
+simulationPeriod = 50;   % days
+populationSize = 50;    % 2.6seconds per 10k people as at 9/May/19
+% only use for small number
+% for larger number, go to generatePopulation();
+startingInfected = 2;   
 
 populationList = generatePopulation(populationSize);
 socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
 diseaseData = getDiseaseData();
 
-% In case no one is sick in the initial population
-% Forcibly makes 1 person sick
-% Sometimes happens for small population size
-if (sum(populationList(:, isSick))==0)
+% seed in infected people
+for inf=1:startingInfected
     personIndex = randi(populationSize, 1, 1);
+    % check that random person is not vaccinated
+    while (populationList(personIndex, isVaccinated) == 1 || populationList(personIndex, isSick) == 1)
+        personIndex = randi(populationSize, 1, 1);
+    end
     populationList(personIndex, :) = updateNewPatient(populationList(personIndex, :));
 end
 
 % create data store for diease spread over the population
-diseasePropagationData = cell(simulationPeriod+1, 1);
+% row: person ID
+% column: day
+diseasePropagationData = zeros(populationSize, simulationPeriod+1);
 % store initial state of the population
-diseasePropagationData{1} = populationList(:,isSick);
+diseasePropagationData(:, 1) = populationList(:,isSick);
 % generate graph
 networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork));
 % colour the graph to reflect disease spread / population health
-highlightSick(networkGraph, socialNetwork, diseasePropagationData{1});
+highlightSick(networkGraph, socialNetwork, diseasePropagationData(:, 1));
 
 
 %%%% variable names to make reading code easier
@@ -81,8 +88,8 @@ for day=1:simulationPeriod
 
     %%%% process/log some data
     % store the isSick column
-    diseasePropagationData{day+1} = populationList(:, isSick);
-    
+    diseasePropagationData(:, day+1) = populationList(:,isSick);
+
 end
 
 %%%% Analyse data
