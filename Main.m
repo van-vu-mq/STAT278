@@ -1,3 +1,11 @@
+% Progam intended to simulate the spread of measles in a population
+% Measle spread takes into consideration:
+%     Propgation properties of the virus
+%     Simplified social behaviour of the populace
+%     Simplified and limited options to contain, prevent or 
+%         otherwise control the spread of the virus
+
+
 tic     % start timer
 
 %===============================%
@@ -34,18 +42,35 @@ previouslyInfected = 12;
 
 %===== Performance ~ 10/May/19
 % Without graph plot
-    % 18.81s ~ 100k people
+    % ~18-21s -> 100k people
     
-displayGraph = 0; % plot the graph during runtime, 0=no, 1=yes
+% repeatable random generation for testing
+rng default
+
+% plot the graph during runtime, 0=no, 1=yes
+displayGraphRuntime = 1; 
 
 simulationPeriod = 365;   % days
-populationSize = 100000;    
+populationSize = 200;    
 % only use for small number
 % for larger number, go to generatePopulation();
-startingInfected = 1;   
+startingInfected = 2;   
 
+
+%===== Initialise population
 populationList = generatePopulation(populationSize);
 socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
+
+
+%===== Data store reach of the virus at any given point
+% row: person ID
+% column: day
+diseasePropagationData = zeros(populationSize, simulationPeriod+1);
+endOfDaySickCount = zeros(populationSize, 1);
+% store initial state of the population
+diseasePropagationData(:, 1) = populationList(:,isSick);
+endOfDaySickCount(1) = sum(populationList(:,isSick));
+
 
 %===== Seed in infected people
 for inf=1:startingInfected
@@ -56,18 +81,9 @@ for inf=1:startingInfected
     end
     populationList(personIndex, :) = updateNewPatient(populationList(personIndex, :));
 end
-
-%===== Data store for disease spread over the population
-% row: person ID
-% column: day
-diseasePropagationData = zeros(populationSize, simulationPeriod+1);
-proportionSick = zeros(populationSize, 1);
-% store initial state of the population
-diseasePropagationData(:, 1) = populationList(:,isSick);
-proportionSick(1) = sum(populationList(:,isSick))/populationSize;
  
 %===== Generate graph
-if (displayGraph == 1)
+if (displayGraphRuntime == 1)
     networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork));
     % colour the graph to reflect disease spread / population health
     highlightSick(networkGraph, socialNetwork, diseasePropagationData(:, 1));
@@ -101,22 +117,26 @@ for day=1:simulationPeriod
         populationList(newSickPersonIndex, :) = updateNewPatient(populationList(newSickPersonIndex, :));
     end
     
-    %===== end of day
+    
+    %===============================%
+    %========= End of day ==========%
+    %===============================%
     % update information of people sick at the beginning of the day
     for person=1:listOfSickPeople
         populationList(person, :) = updateExistingPatient(populationList(person, :));
     end
-    
+   
     %===== process/log data
-    % store the isSick column
+    % Store health state of the population
     diseasePropagationData(:, day+1) = populationList(:,isSick);
-    proportionSick(day+1) = sum(populationList(:,isSick))/populationSize;
+    endOfDaySickCount(day+1) = sum(populationList(:,isSick));
     
-    if (displayGraph == 1)
+    %===== Graph the status of the population
+    if (displayGraphRuntime == 1)
         highlightSick(networkGraph, socialNetwork, diseasePropagationData(:, day+1));  
         disp(" ");
         disp("End of day: " + day);
-        disp(proportionSick(day+1)*100 + "% of population is sick");
+        disp(endOfDaySickCount(day+1) + " person is sick");
     end
 
 end

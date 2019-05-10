@@ -1,6 +1,8 @@
 function socialNetwork = highlightSick(plottedGraph, socialNetwork, sickData)
+% Colours social network connection plot a population to reflect the
+% distribution/spread of study virus/disease.
 
-% Separate population into two groups, sick and not sick
+%===== Separate population into two groups, sick and not sick
 sickList = [1, sum(sickData)];
 notSickList = [1, length(sickData)-sum(sickData)];
 sickIndex = 0;
@@ -15,15 +17,15 @@ for person=1:length(sickData)
     end
 end
 
+%===== Colour the nodes of the plot
+% only colour if there are people that fall in the respective categories
+% highlight function cannot take a zero array/matrix
+
 % colour sick people red
-% only colour if there are sick people
-% error occurs if we try with no sick
 if (sum(sickData) > 0)
     highlight(plottedGraph, sickList, 'NodeColor', 'r');
 end
 % colour healthy people green
-% only colour if there are healthy people
-% error occurs if we try with no healthy
 if (sum(sickData) < length(sickData))
     highlight(plottedGraph, notSickList, 'NodeColor', 'g');
 end

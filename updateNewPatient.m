@@ -1,16 +1,24 @@
 function personData = updateNewPatient(personData)
-% Updates the data of a person who has contracted the disease.
+% Takes a list matrix corresponding to the people who 
+% have contracted the virus/disease. Each person is assigned
+% time markers for key stages in the virus/disease's lifecycle.
+% 
+% Marker values are determined via random values based upon clinically
+% observed data
+% 
+% Data matrix is edited for each person and returned
 
-
+%===== Draw data to generate random values
 diseaseData = getDiseaseData();
-% Disease variable index
+
+%===== Index mapping of variables of disease data
 % d_infectionProbability = 1;
 d_incubationPeriod = 2;
 d_symptomaticPeriod = 3;
 % d_fatalityRate = 4;
 
 
-% Patient variables
+%===== Index mapping of variables of patient data
 % age = 1;
 isSick = 2;
 % isVaccinated = 3;
@@ -25,12 +33,12 @@ incubationPeriod = 9;
 previouslyInfected = 12;
 
 
-% update status to sick
+%===== update status to sick
 personData(1, isSick) = 1;
 personData(1, previouslyInfected) = 1;
 personData(1, daysSick) = 0; % reset
 
-% Expected duration of sickness
+%===== Key stages of virus/disease
 % Incubation
     % log-normal distribution
 mu = diseaseData(1, d_incubationPeriod);

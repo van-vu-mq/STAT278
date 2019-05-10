@@ -1,9 +1,12 @@
 function networkGraph = generateNetworkGraph(populationSize, socialNetworkSizeData, socialNetwork)
-% Graphs connects each person has with the rest of the population
+% Plots vertices for each person.
+% Draws an edge for each connection, defined by aquaintances between people
 
-%%%% Graphing social network
+%===== Variables to hold parameters for edges
 startNode = [];
 endNode = [];
+
+%===== Convert social network data into edge data
 for person=1:populationSize
     personFriendCount = socialNetworkSizeData(person,1);
     for friendIndex=1:personFriendCount
@@ -12,6 +15,6 @@ for person=1:populationSize
     end
 end
 
-
+%===== build graph
 networkGraph = graph(startNode, endNode);
 end
