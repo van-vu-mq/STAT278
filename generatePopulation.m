@@ -7,8 +7,8 @@ function population = generatePopulation(populationSize)
 rng default
     
 % Population properties
-startingSick = 0.1;
-startingVaccinated = 0;
+startingSick = 0;
+startingVaccinated = 0.90;
 
 %%%% initialise list
 varCount = 13;
