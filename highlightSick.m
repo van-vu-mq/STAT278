@@ -22,11 +22,11 @@ end
 % highlight function cannot take a zero array/matrix
 
 % colour sick people red
-if (sum(sickData) > 0)
+if (sickIndex > 0)
     highlight(plottedGraph, sickList, 'NodeColor', 'r');
 end
 % colour healthy people green
-if (sum(sickData) < length(sickData))
+if (notSickIndex > 0)
     highlight(plottedGraph, notSickList, 'NodeColor', 'g');
 end
 
