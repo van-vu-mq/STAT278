@@ -71,23 +71,24 @@ for person=1:populationSize
      % Assumed normally distributed
      mu = personDataRange(1, p_socialNetworkSize);
      sigma = personDataRange(2, p_socialNetworkSize);
-     value = ceil(normrnd(mu, sigma));
+     sns = ceil(normrnd(mu, sigma));
      % make sure at least 1 connection
-     while (value <= 0)
-         value = ceil(normrnd(mu, sigma));
+     while (sns <= 0)
+         sns = ceil(normrnd(mu, sigma));
      end
-     population(person, socialNetworkSize) = value;
+     population(person, socialNetworkSize) = sns;
      
      % Determine average number of people person will 
         % interact with on a daily basis
      % uniformly distributed
      % percentage of social network
-     maxSL = ceil(personDataRange(2, p_socialLevel)*population(person, socialNetworkSize));
+     socLevel = 0;
+     
      % ensure at least 1 person and is a whole number
-     while (maxSL <= 0)
-         maxSL = ceil(personDataRange(2, p_socialLevel)*population(person, socialNetworkSize));
+     while (socLevel <= 0)
+         socLevel = ceil(rand()*2 * sns * personDataRange(2, p_socialLevel));
      end
-     population(person, socialLevel) = ceil(rand() * maxSL);
+     population(person, socialLevel) = socLevel;
      
      
      % Probability person will visit the hospital given symptoms
