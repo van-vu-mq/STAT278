@@ -9,9 +9,15 @@ endNode = [];
 %===== Convert social network data into edge data
 for person=1:populationSize
     personFriendCount = socialNetworkSizeData(person,1);
-    for friendIndex=1:personFriendCount
-        startNode = [startNode, person];
-        endNode = [endNode, socialNetwork(person,friendIndex)];
+    for friend=1:personFriendCount
+        friendIndex = socialNetwork(person,friend);
+        % check that we have not already added all edges for friend
+        % prevents duplicates
+            % if A-B is done, no need to do B-A
+        if (person<friendIndex)
+            startNode = [startNode, person];
+            endNode = [endNode, friendIndex];
+        end
     end
 end
 
