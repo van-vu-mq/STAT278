@@ -30,9 +30,9 @@ personData(2, p_age) = 100;
 
 % smaller value between 'mu' people and n% of population
 % handles case of small population size
-targetMean = 30;
+targetMean = 60;
 mu = ceil(min(floor(populationSize*0.1), targetMean));
-sigma = ceil(mu*0.20);
+sigma = ceil(mu*0.1);
 personData(1, p_socialNetworkSize) = mu;
 personData(2, p_socialNetworkSize) = sigma;
 
