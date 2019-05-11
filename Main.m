@@ -48,10 +48,10 @@ previouslyInfected = 12;
 rng default
 
 % plot the graph during runtime, 0=no, 1=yes
-displayGraphRuntime = 1; 
+displayGraphRuntime = 0; 
 
-simulationPeriod = 365;   % days
-populationSize = 200;    
+simulationPeriod = 0;   % days
+populationSize = 10000;    
 % only use for small number
 % for larger number, go to generatePopulation();
 startingInfected = 2;   
@@ -59,7 +59,12 @@ startingInfected = 2;
 
 %===== Initialise population
 populationList = generatePopulation(populationSize);
-socialNetwork = generateRandomSocialNetwork(populationSize, populationList(:,socialNetworkSize));
+socialNetwork = generateSocialNetwork(populationSize, populationList(:,socialNetworkSize));
+% correct mismatch of assigned aquataince and socialNetworkSize
+    % refer to generate socialNetwork()
+for person=1:populationSize
+    populationList(person, socialNetworkSize) = sum(socialNetwork(person, :)>0);
+end
 
 %===== Seed in infected people
 for inf=1:startingInfected
@@ -81,10 +86,11 @@ diseasePropagationData(:, 1) = populationList(:,isSick);
 endOfDaySickCount(1) = sum(populationList(:,isSick));
  
 %===== Generate graph
+networkGraph = generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork);
 if (displayGraphRuntime == 1)
-    networkGraph = plot(generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork));
+    networkPlot = plot(networkGraph);
     % colour the graph to reflect disease spread / population health
-    highlightSick(networkGraph, socialNetwork, diseasePropagationData(:, 1));
+    highlightSick(networkPlot, socialNetwork, diseasePropagationData(:, 1));
 end
 
 %===============================%
@@ -132,7 +138,7 @@ for day=1:simulationPeriod
     
     %===== Graph the status of the population
     if (displayGraphRuntime == 1)
-        highlightSick(networkGraph, socialNetwork, diseasePropagationData(:, day+1));  
+        highlightSick(networkPlot, socialNetwork, diseasePropagationData(:, day+1));  
         disp(" ");
         disp("End of day: " + day);
         disp(endOfDaySickCount(day+1) + " person is sick");
