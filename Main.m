@@ -50,8 +50,8 @@ rng default
 % plot the graph during runtime, 0=no, 1=yes
 displayGraphRuntime = 0; 
 
-simulationPeriod = 0;   % days
-populationSize = 10000;    
+simulationPeriod = 500;   % days
+populationSize = 100000;    
 % only use for small number
 % for larger number, go to generatePopulation();
 startingInfected = 2;   
@@ -59,13 +59,20 @@ startingInfected = 2;
 
 %===== Initialise population
 populationList = generatePopulation(populationSize);
+disp("===============================================");
+disp("Setup population");
+toc;
+tic;
 socialNetwork = generateSocialNetwork(populationSize, populationList(:,socialNetworkSize));
 % correct mismatch of assigned aquataince and socialNetworkSize
     % refer to generate socialNetwork()
 for person=1:populationSize
     populationList(person, socialNetworkSize) = sum(socialNetwork(person, :)>0);
 end
-
+disp("===============================================");
+disp("Setup social network");
+toc;
+tic;
 %===== Seed in infected people
 for inf=1:startingInfected
     personIndex = randi(populationSize);
@@ -97,6 +104,9 @@ end
 %============ Logic ============%
 %===============================%
 for day=1:simulationPeriod
+    if (endOfDaySickCount(day) == 0)
+        break
+    end
     
     numberOfSickPeople = sum(populationList(:, isSick));
     listOfSickPeople = zeros(numberOfSickPeople, 1);
@@ -141,12 +151,48 @@ for day=1:simulationPeriod
         highlightSick(networkPlot, socialNetwork, diseasePropagationData(:, day+1));  
         disp(" ");
         disp("End of day: " + day);
-        disp(endOfDaySickCount(day+1) + " person is sick");
+        disp(endOfDaySickCount(day+1) + " people are sick");
     end
 
 end
 
 %==== Analyse data
 % graph, plot data, distribution fits, growth/decay analysis etc
+vaxCount = sum(populationList(:, isVaccinated));
+startSick = sum(endOfDaySickCount(1));
 
-toc     % lap timer
+avgNetSize = mean(populationList(:, socialNetworkSize));
+avgDailyInteraction = mean(populationList(:, socialLevel));
+avgHospVisitChance = mean(populationList(:, hospitalVisit))*100;
+
+peakSick = max(endOfDaySickCount);
+peakDay = 0;
+for day=1:simulationPeriod
+    if (endOfDaySickCount(day) == peakSick)
+        peakDay = day;
+        break
+    end
+end
+
+disp("===============================================");
+disp("Simulation");
+toc;
+
+
+disp("===============================================");
+disp("Intended days simulated: " + simulationPeriod);
+disp("Days simulated: " + (sum(endOfDaySickCount>0)-1));
+disp("Population Size: " + populationSize);
+disp(" ");
+disp("Average social network size: " + avgNetSize);
+disp("Average daily interactions: " + avgDailyInteraction);
+disp("Average chance of hospital visit given symptoms: " + avgHospVisitChance + "%");
+disp(" ");
+disp("People vaccinated: " + vaxCount + " / " + vaxCount/populationSize*100 + "%");
+disp("Initial number of sick people: " + startSick + " / " + startSick/populationSize*100 + "%");
+disp(" ");
+disp("Peak number of sick people: " + peakSick + " / " + peakSick/populationSize*100 + "%");
+disp("     Day: " + peakDay);
+histogram(endOfDaySickCount);
+
+
