@@ -32,6 +32,7 @@ if (personData(1, daysSick) >= totalSickDuration)
     personData(1, symptomaticPeriod) = 0;
     personData(1, daysSick) = 0;
     personData(1, hasSymptoms) = 0;
+    personData(1, atHome) = 0;
     
 %===== Person is sick and not at home (pserson is able to spread the disease)
 elseif (personData(1, atHome) == 0)
