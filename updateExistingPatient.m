@@ -34,7 +34,7 @@ if (personData(1, daysSick) >= totalSickDuration)
     personData(1, hasSymptoms) = 0;
     personData(1, atHome) = 0;
     
-%===== Person is sick and not at home (pserson is able to spread the disease)
+%===== Person is sick and not at home (person is able to spread the disease)
 elseif (personData(1, atHome) == 0)
     % check if person should be displaying symptoms 
     if (personData(1, daysSick) > personData(1, incubationPeriod))
@@ -48,6 +48,8 @@ elseif (personData(1, atHome) == 0)
         if (chance < personData(1, hospitalVisit))
             % update person based on hospital interaction
             personData(1, :) = visitHospital(personData(1, :));
+            % make person stay at home
+            personData(1, atHome) = 1;
         end
     end
 end
