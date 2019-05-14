@@ -30,7 +30,7 @@ personID = 13;
 %===============================%
 % Population properties
 startingSick = 0;
-startingVaccinated = 0.97;
+startingVaccinated = 0.95;
 
 %===== Initialise variable to hold data
 varCount = 13;

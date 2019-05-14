@@ -20,7 +20,7 @@ socialNetwork = zeros(populationSize, max(socialNetworkSizeData));
 assignedCounter = zeros(populationSize, 1);
 
 % 
-overCapacityThreshold = 1.08;
+overCapacityThreshold = 1.1;
 
 %===== Assign Aquaintances
 for person=1:populationSize
