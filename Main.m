@@ -48,7 +48,7 @@ previouslyInfected = 12;
 %rng default
 
 % plot the graph during runtime, 0=no, 1=yes
-displayGraphRuntime = 1; 
+displayGraphRuntime = 0; 
 
 simulationPeriod = 500;   % days
 populationSize = 500;    
@@ -178,6 +178,8 @@ for day=1:simulationPeriod
     end
 end
 
+daysSimulated = sum(endOfDaySickCount>0)-1;
+
 disp("===============================================");
 disp("Simulation");
 toc;
@@ -185,7 +187,7 @@ toc;
 
 disp("===============================================");
 disp("Intended days simulated: " + simulationPeriod);
-disp("Days simulated: " + (sum(endOfDaySickCount>0)-1));
+disp("Days simulated: " + daysSimulated);
 disp("Population Size: " + populationSize);
 disp(" ");
 disp("Average social network size: " + avgNetSize);
@@ -197,5 +199,22 @@ disp("Initial number of sick people: " + startSick + " / " + startSick/populatio
 disp(" ");
 disp("Peak number of sick people: " + peakSick + " / " + peakSick/populationSize*100 + "%");
 disp("     Day: " + peakDay);
+
+
+%===============================%
+%======== Write to File ========%
+%===============================%
+
+
+
+% setup file
+sim = 1;
+filename = "Measles";
+filename = filename+".txt";
+fileID = fopen(filename, 'w');
+% write the data
+% only write non zero/empty values
+fprintf(fileID, '%f\n', endOfDaySickCount(1:(daysSimulated+1), :));
+fclose(fileID);
 
 
