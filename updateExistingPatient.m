@@ -16,7 +16,7 @@ incubationPeriod = 9;
 hasSymptoms = 10;
 atHome = 11;
 % previouslyInfected = 12;
-index = 13;
+% index = 13;
 
 %===== Update time from inital infection
 personData(1, daysSick) = personData(1, daysSick) + 1;
