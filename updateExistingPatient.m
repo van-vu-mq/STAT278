@@ -18,7 +18,7 @@ atHome = 11;
 % previouslyInfected = 12;
 % index = 13;
 
-personData = polulationList(sickPersonID, :);
+personData = populationList(sickPersonID, :);
 
 %===== Update time from inital infection
 personData(1, daysSick) = personData(1, daysSick) + 1;
