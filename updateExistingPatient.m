@@ -16,7 +16,7 @@ incubationPeriod = 9;
 hasSymptoms = 10;
 atHome = 11;
 % previouslyInfected = 12;
-index = 13;
+% index = 13;
 
 personData = polulationList(sickPersonID, :);
 

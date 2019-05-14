@@ -42,10 +42,10 @@ previouslyInfected = 12;
 
 %===== Performance ~ 10/May/19
 % Without graph plot
-    % ~18-21s -> 100k people
+    % ~33-35s -> 100k people
     
 % repeatable random generation for testing
-rng default
+%rng default
 
 % plot the graph during runtime, 0=no, 1=yes
 displayGraphRuntime = 0; 
@@ -99,6 +99,10 @@ if (displayGraphRuntime == 1)
     % colour the graph to reflect disease spread / population health
     highlightSick(networkPlot, socialNetwork, diseasePropagationData(:, 1));
 end
+disp("===============================================");
+disp("Generate Network Graph");
+toc;
+tic;
 
 %===============================%
 %============ Logic ============%
@@ -193,6 +197,5 @@ disp("Initial number of sick people: " + startSick + " / " + startSick/populatio
 disp(" ");
 disp("Peak number of sick people: " + peakSick + " / " + peakSick/populationSize*100 + "%");
 disp("     Day: " + peakDay);
-histogram(endOfDaySickCount);
 
 

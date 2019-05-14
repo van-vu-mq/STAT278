@@ -47,7 +47,7 @@ personData(2, p_socialLevel) = 0.10;
 % May vary if stages and severity of symptoms are defined in the model
     % e.g. cough/watery eyes > fever > rashes
 % mean, sigma
-personData(1, p_visitHospital) = 0.95;
-personData(2, p_visitHospital) = 0.05;
+personData(1, p_visitHospital) = 1;
+personData(2, p_visitHospital) = 0;
 
 end

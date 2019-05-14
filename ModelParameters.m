@@ -34,5 +34,14 @@ generateSocialNetwork():
     overCapacityThreshold: 1+, double, percentage. multiplier of
             socialNetwork size
 
+% ======================================================================= %
+% ======================================================================= %
+The following is the collection of variables that store the proression of
+the simulation. These variables are to be analysed to derive meaningful
+data
+% ======================================================================= %
+% ======================================================================= %
+
+
 
 %}
