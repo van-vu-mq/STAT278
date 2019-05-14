@@ -1,4 +1,4 @@
-function personData = updateExistingPatient(personData)
+function personData = updateExistingPatient(personData, populationList, socialNetwork)
 % Updates the data of given person who currently has the disease 
 % to emulate the passing of one day.
 
@@ -31,7 +31,7 @@ if (personData(1, daysSick) >= totalSickDuration)
     personData(1, daysSick) = 0;
     personData(1, hasSymptoms) = 0;
     
-%===== Person is sick and not at home (pserosn is able to spread the disease)
+%===== Person is sick and not at home (pserson is able to spread the disease)
 elseif (personData(1, atHome) == 0)
     % check if person should be displaying symptoms 
     if (personData(1, daysSick) > personData(1, incubationPeriod))
