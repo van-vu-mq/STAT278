@@ -1,4 +1,4 @@
-function personData = updateExistingPatient(personData, populationList, socialNetwork)
+function populationList = updateExistingPatient(sickPersonID, populationList, socialNetwork)
 % Updates the data of given person who currently has the disease 
 % to emulate the passing of one day.
 
@@ -17,6 +17,8 @@ hasSymptoms = 10;
 atHome = 11;
 % previouslyInfected = 12;
 index = 13;
+
+personData = polulationList(sickPersonID, :);
 
 %===== Update time from inital infection
 personData(1, daysSick) = personData(1, daysSick) + 1;
@@ -49,6 +51,6 @@ elseif (personData(1, atHome) == 0)
     end
 end
 
-
+populationlist(sickPersonID,:) = sickPersonData;
 
 end

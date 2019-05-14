@@ -138,7 +138,7 @@ for day=1:simulationPeriod
     % update information of people sick at the beginning of the day
     for person=1:length(listOfSickPeople)
         sickPersonID = listOfSickPeople(person);
-        populationList(sickPersonID, :) = updateExistingPatient(sickPersonID, populationList, socialNetworks);
+        populationList = updateExistingPatient(sickPersonID, populationList, socialNetworks);
     end
    
     %===== process/log data
