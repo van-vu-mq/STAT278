@@ -48,10 +48,10 @@ previouslyInfected = 12;
 %rng default
 
 % plot the graph during runtime, 0=no, 1=yes
-displayGraphRuntime = 0; 
+displayGraphRuntime = 1; 
 
 simulationPeriod = 500;   % days
-populationSize = 100000;    
+populationSize = 500;    
 % only use for small number
 % for larger number, go to generatePopulation();
 startingInfected = 2;   
@@ -142,7 +142,7 @@ for day=1:simulationPeriod
     % update information of people sick at the beginning of the day
     for person=1:length(listOfSickPeople)
         sickPersonID = listOfSickPeople(person);
-        populationList = updateExistingPatient(sickPersonID, populationList, socialNetworks);
+        populationList = updateExistingPatient(sickPersonID, populationList, socialNetwork);
     end
    
     %===== process/log data
