@@ -1,4 +1,4 @@
-function population = generatePopulation(populationSize)
+function population = generatePopulation(populationSize, percentVaccinated)
 % Creates and returns a matrix that represents a population
 % Matrix of size: populationSize x variablesPerPerson
    
@@ -30,7 +30,6 @@ personID = 13;
 %===============================%
 % Population properties
 startingSick = 0;
-startingVaccinated = 0.95;
 
 %===== Initialise variable to hold data
 varCount = 13;
@@ -54,18 +53,18 @@ for person=1:populationSize
      population(person, age) = ceil(random('Exponential',mu));
      
      % Seed vaccinated people into the population
-     population(person, isVaccinated) = rand() < startingVaccinated;
+     population(person, isVaccinated) = rand() < percentVaccinated;
      
      % Seed sick people into the poplation
      % need to move this out of the loop to avoid vaccinated people
      % causing skews/reducing the number of seeded infected people
-     chance = rand();
-     % check that random person is not vaccinated
-     if (chance < startingSick && population(person,isVaccinated)==0)
-         population(person, isSick) = 1;
-         population(person, :) = updateNewPatient(population(person,:));
-         population(person, previouslyInfected) = 1;
-     end
+%      chance = rand();
+%      % check that random person is not vaccinated
+%      if (chance < startingSick && population(person,isVaccinated)==0)
+%          population(person, isSick) = 1;
+%          population(person, :) = updateNewPatient(population(person,:));
+%          population(person, previouslyInfected) = 1;
+%      end
 
      % Determine the size/number of people in person's social network
      % Assumed normally distributed
