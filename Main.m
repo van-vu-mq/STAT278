@@ -6,62 +6,59 @@
 %         otherwise control the spread of the virus
 
 
-tic     % start timer
-
-%===============================%
-%========= TO_DO LIST ==========%
-%===============================%
-% simulate interaction with social network
-    % friends of sick person goes to the hospital
-% update generateSocialNetwork
-    % cluster format
-% process data    
-
-
-    %===============================%
-    %=== PopulationList Variables ==%
-    %===============================%
-    age = 1;
-    isSick = 2;
-    isVaccinated = 3;
-    socialNetworkSize = 4;
-    socialLevel = 5;
-    hospitalVisit = 6;
-    % symptomaticPeriod = 7;
-    % daysSick = 8;
-    % incubationPeriod = 9;
-    hasSymptoms = 10;
-    atHome = 11;
-    previouslyInfected = 12;
+tic;     % start timer
 
 
 %===============================%
 %============ Setup ============%
 %===============================%
 
-%===== Performance ~ 10/May/19
-% Without graph plot
-    % ~33-35s -> 100k people
-
 % repeatable random generation for testing
-%rng default
+% rng default
 
-simulationRepeats = 1;
+% Display useful data about the simulation
+displayGraph = 0;   % Social network relation graph
+displaySummary = 0; % End of simulation summary of the measle spread
+displayTimer = 1;   % Time taken to execute each stage of the simulation
 
-% plot the graph during runtime, 0=no, 1=yes
-displayGraphRuntime = 0; 
-displaySummary = 0;
-displayTimer = 0;
-
-simulationDays = 300;   % days
+% Simulation Parameters
+% Edit these to fit your case
+simulationDays = 300;   % max days
+simulationRepeats = 1;  % iterations
 populationSize = 100000;    
-% only use for small number
-% for larger number, go to generatePopulation();
-startingInfected = 2;   
+startingInfected = 2;   % number of people
+percentVaccinated = 0.95;    % percentage of population
 
+
+%===============================%
+%=== PopulationList Variables ==%
+%===============================%
+% Used for referencing the population in place of integers
+% DO NOT MODIFY THIS
+% age = 1;
+isSick = 2;
+isVaccinated = 3;
+socialNetworkSize = 4;
+socialLevel = 5;
+hospitalVisit = 6;
+% symptomaticPeriod = 7;
+% daysSick = 8;
+% incubationPeriod = 9;
+hasSymptoms = 10;
+atHome = 11;
+previouslyInfected = 12;
+
+%===============================%
+%========= Simulation ==========%
+%===============================%
 for sim=1:simulationRepeats
+    
+    %===============================%
+    %=== Initialiase Environment ===%
+    %===============================%    
+    
     %===== Initialise population
-    populationList = generatePopulation(populationSize);
+    populationList = generatePopulation(populationSize, percentVaccinated);
     if(displayTimer == 1)
         disp("===============================================");
         disp("Setup population");
@@ -100,18 +97,19 @@ for sim=1:simulationRepeats
     endOfDaySickCount(1) = sum(populationList(:,isSick));
 
     %===== Generate graph
-    networkGraph = generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork);
-    if (displayGraphRuntime == 1)
+    if (displayGraph == 1)
+        networkGraph = generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork);
         networkPlot = plot(networkGraph);
         % colour the graph to reflect disease spread / population health
         highlightSick(networkPlot, socialNetwork, diseasePropagationData(:, 1));
+        if(displayTimer == 1)
+            disp("===============================================");
+            disp("Generate Network Graph");
+            toc;
+            tic;
+        end        
     end
-    if(displayTimer == 1)
-        disp("===============================================");
-        disp("Generate Network Graph");
-        toc;
-        tic;
-    end
+
 
     %===============================%
     %============ Logic ============%
@@ -160,7 +158,7 @@ for sim=1:simulationRepeats
         endOfDaySickCount(day+1) = sum(populationList(:,isSick));
 
         %===== Graph the status of the population
-        if (displayGraphRuntime == 1)
+        if (displayGraph == 1)
             highlightSick(networkPlot, socialNetwork, diseasePropagationData(:, day+1));  
             disp(" ");
             disp("End of day: " + day);
@@ -169,7 +167,9 @@ for sim=1:simulationRepeats
 
     end
 
-    %==== Analyse data
+    %===============================%
+    %========= Process Data ========%
+    %===============================%
     % graph, plot data, distribution fits, growth/decay analysis etc
     
     vaxCount = sum(populationList(:, isVaccinated));
@@ -212,19 +212,22 @@ for sim=1:simulationRepeats
         disp(" ");
         disp("Peak number of sick people: " + peakSick + " / " + peakSick/populationSize*100 + "%");
         disp("     Day: " + peakDay);
-
     end
     
     %===============================%
     %======== Write to File ========%
     %===============================%
     % setup file
-    filename = "Measles" + sim;
-    filename = filename + ".txt";
+    filename = "Measles_Vax-" + percentVaccinated + "_Instance-" + sim + ".txt";
     fileID = fopen(filename, 'w');
     % write the data
     fprintf(fileID, '%i\n', endOfDaySickCount);
     fclose(fileID);
     
 end
-tic;
+
+if (displayTimer == 0)
+    disp("===============================================");
+    disp("Total Run Time");
+	toc;
+end
