@@ -1,4 +1,4 @@
-function populationList = updateExistingPatient(sickPersonID, populationList, socialNetwork)
+function personData = updateExistingPatient(personData)
 % Updates the data of given person who currently has the disease 
 % to emulate the passing of one day.
 
@@ -6,7 +6,7 @@ function populationList = updateExistingPatient(sickPersonID, populationList, so
 %===== Index mapping of variables of person data
 % age = 1;
 isSick = 2;
-isVaccinated = 3;
+% isVaccinated = 3;
 % socialNetworkSize = 4;
 % socialLevel = 5;
 hospitalVisit = 6;
@@ -18,7 +18,7 @@ atHome = 11;
 % previouslyInfected = 12;
 % index = 13;
 
-personData = populationList(sickPersonID, :);
+% personData = populationList(sickPersonID, :);
 
 %===== Update time from inital infection
 personData(1, daysSick) = personData(1, daysSick) + 1;
@@ -50,31 +50,10 @@ elseif (personData(1, atHome) == 0)
             personData(1, :) = visitHospital(personData(1, :));
             % make person stay at home
             personData(1, atHome) = 1;
-            
-            
-            %Friends of the sick person get tested 
-            friendCount = populationList(sickPersonID, socialNetworkSize);
-            for friendID = 1:friendCount
-                friend = socialNetwork(sickPersonID,friendID)
-                %Friend of sick person goes to hospital to get tested
-                %If the friend is sick, they stay home
-                if populationList(friend, isSick) ==1
-                    populationList(friend,atHome) = 1;
-                %If the friend is not sick, they get vaccinated
-                elseif populationList(friend, isSick) ==0
-                        populationList(friend,isVaccinated) = 1;
-                end
-            end
-            
-
-                
-                    %if sick, stay home, if not sick, get vaccinated
-                populationList(friend,6) = 1
-            
         end
     end
 end
 
-populationList(sickPersonID,:) = personData;
+% populationList(sickPersonID,:) = personData;
 
 end
