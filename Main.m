@@ -17,8 +17,8 @@ tic;     % start timer
 % rng default
 
 % Display useful data about the simulation
-displayGraph = 0;   % Social network relation graph
-displaySummary = 0; % End of simulation summary of the measle spread
+displayGraph = 1;   % Social network relation graph
+displaySummary = 1; % End of simulation summary of the measle spread
 displayTimer = 1;   % Time taken to execute each stage of the simulation
 
 % Simulation Parameters
@@ -27,7 +27,7 @@ simulationDays = 300;   % max days
 simulationRepeats = 1;  % iterations
 populationSize = 100000;    
 startingInfected = 2;   % number of people
-percentVaccinated = 0.95;    % percentage of population
+percentVaccinated = 0.90;    % percentage of population
 
 
 %===============================%
@@ -95,7 +95,12 @@ for sim=1:simulationRepeats
     % store initial state of the population
     diseasePropagationData(:, 1) = populationList(:,isSick);
     endOfDaySickCount(1) = sum(populationList(:,isSick));
-
+    if(displayTimer == 1)
+        disp("===============================================");
+        disp("End Setup");
+        toc;
+        tic;
+    end
     %===== Generate graph
     if (displayGraph == 1)
         networkGraph = generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork);
@@ -146,11 +151,28 @@ for sim=1:simulationRepeats
         %===============================%
         %========= End of day ==========%
         %===============================%
-        % update information of people sick at the beginning of the day
+        % update information of people sick at the end of the day
         for person=1:length(listOfSickPeople)
             sickPersonID = listOfSickPeople(person);
-            populationList = updateExistingPatient(sickPersonID, populationList, socialNetwork);
+            populationList(sickPersonID, :) = updateExistingPatient(populationList(sickPersonID, :));
+            
+            % If sick person has visited the hospital and has been 
+            % diagnosed with the disease/virus ~ has visible symptoms
+            if (populationList(sickPersonID, atHome) == 1)
+                % Go through sick person's social network
+                friendCount = populationList(sickPersonID, socialNetworkSize);
+                for friend=1:friendCount
+                    friendID = socialNetwork(sickPersonID, friend);
+                    % Determine if friend will visit the hospital
+                    chance = rand();
+                    if (chance < populationList(friendID, hospitalVisit))
+                        populationList(friendID, :) = visitHospital(populationList(friendID, :));
+                    end
+                end                  
+            end
+  
         end
+
 
         %===== process/log data
         % Store health state of the population
@@ -166,37 +188,33 @@ for sim=1:simulationRepeats
         end
 
     end
-
-    %===============================%
-    %========= Process Data ========%
-    %===============================%
-    % graph, plot data, distribution fits, growth/decay analysis etc
-    
-    vaxCount = sum(populationList(:, isVaccinated));
-    startSick = sum(endOfDaySickCount(1));
-
-    avgNetSize = mean(populationList(:, socialNetworkSize));
-    avgDailyInteraction = mean(populationList(:, socialLevel));
-    avgHospVisitChance = mean(populationList(:, hospitalVisit))*100;
-
-    peakSick = max(endOfDaySickCount);
-    peakDay = 0;
-    for day=1:simulationDays
-        if (endOfDaySickCount(day) == peakSick)
-            peakDay = day;
-            break
-        end
-    end
-
-    daysSimulated = sum(endOfDaySickCount>0)-1;
-
     if (displayTimer == 1)
         disp("===============================================");
         disp("Simulation");
         toc;
     end
-    
+    %===============================%
+    %========= Process Data ========%
+    %===============================%
+    % graph, plot data, distribution fits, growth/decay analysis etc
     if (displaySummary == 1) 
+        vaxCount = sum(populationList(:, isVaccinated));
+        startSick = sum(endOfDaySickCount(1));
+
+        avgNetSize = mean(populationList(:, socialNetworkSize));
+        avgDailyInteraction = mean(populationList(:, socialLevel));
+        avgHospVisitChance = mean(populationList(:, hospitalVisit))*100;
+
+        peakSick = max(endOfDaySickCount);
+        peakDay = 0;
+        for day=1:simulationDays
+            if (endOfDaySickCount(day) == peakSick)
+                peakDay = day;
+                break
+            end
+        end
+
+        daysSimulated = sum(endOfDaySickCount>0)-1;
 
         disp("===============================================");
         disp("Intended days simulated: " + simulationDays);
@@ -212,6 +230,11 @@ for sim=1:simulationRepeats
         disp(" ");
         disp("Peak number of sick people: " + peakSick + " / " + peakSick/populationSize*100 + "%");
         disp("     Day: " + peakDay);
+        if (displayTimer == 1)
+            disp("===============================================");
+            disp("Generate Summary");
+            toc;
+        end        
     end
     
     %===============================%
@@ -223,6 +246,11 @@ for sim=1:simulationRepeats
     % write the data
     fprintf(fileID, '%i\n', endOfDaySickCount);
     fclose(fileID);
+    if (displayTimer == 1)
+        disp("===============================================");
+        disp("Write to file");
+        toc;
+    end
     
 end
 
