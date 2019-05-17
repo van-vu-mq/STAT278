@@ -17,15 +17,15 @@ tic;     % start timer
 % rng default
 
 % Display useful data about the simulation
-displayGraph = 1;   % Social network relation graph
-displaySummary = 1; % End of simulation summary of the measle spread
-displayTimer = 1;   % Time taken to execute each stage of the simulation
+displayGraph = 0;   % Social network relation graph
+displaySummary = 0; % End of simulation summary of the measle spread
+displayTimer = 0;   % Time taken to execute each stage of the simulation
 
 % Simulation Parameters
 % Edit these to fit your case
 simulationDays = 300;   % max days
 simulationRepeats = 1;  % iterations
-populationSize = 100000;    
+populationSize = 50000;    
 startingInfected = 2;   % number of people
 percentVaccinated = 0.90;    % percentage of population
 
@@ -47,6 +47,7 @@ hospitalVisit = 6;
 hasSymptoms = 10;
 atHome = 11;
 previouslyInfected = 12;
+% index = 13
 
 %===============================%
 %========= Simulation ==========%
@@ -59,6 +60,7 @@ for sim=1:simulationRepeats
     
     %===== Initialise population
     populationList = generatePopulation(populationSize, percentVaccinated);
+    vaxCount = sum(populationList(:, isVaccinated));
     if(displayTimer == 1)
         disp("===============================================");
         disp("Setup population");
@@ -151,26 +153,17 @@ for sim=1:simulationRepeats
         %===============================%
         %========= End of day ==========%
         %===============================%
-        % update information of people sick at the end of the day
+        
         for person=1:length(listOfSickPeople)
+            % update information of people sick at the end of the day
             sickPersonID = listOfSickPeople(person);
             populationList(sickPersonID, :) = updateExistingPatient(populationList(sickPersonID, :));
-            
-            % If sick person has visited the hospital and has been 
-            % diagnosed with the disease/virus ~ has visible symptoms
-            if (populationList(sickPersonID, atHome) == 1)
-                % Go through sick person's social network
-                friendCount = populationList(sickPersonID, socialNetworkSize);
-                for friend=1:friendCount
-                    friendID = socialNetwork(sickPersonID, friend);
-                    % Determine if friend will visit the hospital
-                    chance = rand();
-                    if (chance < populationList(friendID, hospitalVisit))
-                        populationList(friendID, :) = visitHospital(populationList(friendID, :));
-                    end
-                end                  
-            end
-  
+        end
+        
+        paranoidPeople = getParanoidPeople(populationList, socialNetwork, listOfSickPeople);
+        for person=1:length(paranoidPeople)
+            personID = paranoidPeople(person);
+            populationList(personID, :) = visitHospital(populationList(personID, :));
         end
 
 
@@ -198,7 +191,7 @@ for sim=1:simulationRepeats
     %===============================%
     % graph, plot data, distribution fits, growth/decay analysis etc
     if (displaySummary == 1) 
-        vaxCount = sum(populationList(:, isVaccinated));
+        
         startSick = sum(endOfDaySickCount(1));
 
         avgNetSize = mean(populationList(:, socialNetworkSize));
@@ -244,7 +237,7 @@ for sim=1:simulationRepeats
     filename = "Measles_Vax-" + percentVaccinated + "_Instance-" + sim + ".txt";
     fileID = fopen(filename, 'w');
     % write the data
-    fprintf(fileID, '%i\n', endOfDaySickCount);
+    fprintf(fileID, '%g\n', endOfDaySickCount);
     fclose(fileID);
     if (displayTimer == 1)
         disp("===============================================");
