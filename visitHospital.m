@@ -12,14 +12,14 @@ isSick = 2;
 isVaccinated = 3;
 % socialNetworkSize = 4;
 % socialLevel = 5;
-% hospitalVisit = 6;
+% hospitalVisitChance = 6;
 % symptomaticPeriod = 7;
 % daysSick = 8;
 % incubationPeriod = 9;
 % hasSymptoms = 10;
 atHome = 11;
 % previouslyInfected = 12;
-
+% index = 13;
 
 if(personData(1, isSick) == 1)
     % if person is sick they are told to stay home

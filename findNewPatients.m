@@ -1,8 +1,10 @@
 function newPatients = findNewPatients(populationList, socialNetwork, listOfSickPeople)
 % Logic to determine who becomes infected
-% Return aa array containing the index/ID of the people who has
+% Return an array containing the index/ID of the people who has
 % contracted the disease.
 
+        
+%===== Index mapping of variables of person data
 % age = 1;
 % isSick = 2;
 isVaccinated = 3;
@@ -15,12 +17,16 @@ incubationPeriod = 9;
 % hasSymptoms = 10;
 % atHome = 11;
 previouslyInfected = 12;
+% index = 13;
 
-diseaseData = getDiseaseData();
+        
+%===== Index mapping of variables of disease data
 d_infectionProbability = 1;
 % d_incubationPeriod = 2;
 % d_symptomaticPeriod = 3;
 % d_fatalityRate = 4;
+
+diseaseData = getDiseaseData();
 
 newPatients = [];
 
@@ -28,7 +34,7 @@ for sickPerson=1:length(listOfSickPeople)
     sickPersonIndex = listOfSickPeople(sickPerson,1);
     % if person is infectious
     % incubation period - 4
-    if (populationList(sickPersonIndex, daysSick) >  populationList(sickPersonIndex, incubationPeriod)-5)
+    if (populationList(sickPersonIndex, daysSick) >=  populationList(sickPersonIndex, incubationPeriod)-4)
         % people interact with different number of people daily
         % determine how many people sick person will interact with
         mu = populationList(sickPersonIndex, socialLevel);
@@ -41,8 +47,8 @@ for sickPerson=1:length(listOfSickPeople)
             % get friend's index/ID in the populationList
             friendIndex = socialNetwork(sickPersonIndex, friend);
 
-            % check friend is not vaccinated
-            % and not been sick before
+            % check friend is not vaccinated and not previously infected,
+            % otherwise they are immune
             if (populationList(friendIndex, isVaccinated)==0 ...
                     && populationList(friendIndex, previouslyInfected)==0 ...
             )

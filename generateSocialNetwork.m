@@ -24,7 +24,7 @@ overCapacityThreshold = 1.1;
 
 %===== Assign Aquaintances
 for person=1:populationSize
-    % how many to assign - how many already assigned
+    % how many to assign minus how many already assigned
     friendCount = 0;
     % make sure not over limit
     if (assignedCounter(person) < socialNetworkSizeData(person)*overCapacityThreshold)
@@ -40,7 +40,7 @@ for person=1:populationSize
         % person is not in friend's social network
         
         % will not make friend have too many people in social network
-            % temporary solution, allow 10% additional size
+            % temporary solution, allow n% additional social network size
         while (friend == person ...
             || ismember(friend, socialNetwork(person,:)) == 1 ...
             || ismember(person, socialNetwork(friend,:)) == 1 ...

@@ -12,6 +12,7 @@ socialLevel = 5;
 % hasSymptoms = 10;
 atHome = 11;
 % previouslyInfected = 12;
+% index = 13;
 
 paranoidPeople = []; % people who are worried and may visit the hospital
 % multiplier of social level, how many people person 

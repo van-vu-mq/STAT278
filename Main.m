@@ -18,14 +18,14 @@ tic;     % start timer
 
 % Display useful data about the simulation
 displayGraph = 0;   % Social network relation graph
-displaySummary = 0; % End of simulation summary of the measle spread
+displaySummary = 1; % End of simulation summary of the measle spread
 displayTimer = 0;   % Time taken to execute each stage of the simulation
 
 % Simulation Parameters
 % Edit these to fit your case
 simulationDays = 300;   % max days
 simulationRepeats = 1;  % iterations
-populationSize = 50000;    
+populationSize = 10000;    
 startingInfected = 2;   % number of people
 percentVaccinated = 0.90;    % percentage of population
 
@@ -40,7 +40,7 @@ isSick = 2;
 isVaccinated = 3;
 socialNetworkSize = 4;
 socialLevel = 5;
-hospitalVisit = 6;
+hospitalVisitChance = 6;
 % symptomaticPeriod = 7;
 % daysSick = 8;
 % incubationPeriod = 9;
@@ -58,7 +58,7 @@ for sim=1:simulationRepeats
     %=== Initialiase Environment ===%
     %===============================%    
     
-    %===== Initialise population
+    %===== Generate our population
     populationList = generatePopulation(populationSize, percentVaccinated);
     vaxCount = sum(populationList(:, isVaccinated));
     if(displayTimer == 1)
@@ -67,9 +67,12 @@ for sim=1:simulationRepeats
         toc;
         tic;
     end
+    
+    %===== Determine social connections for physical / close proximity  
+            % interaction within our population
     socialNetwork = generateSocialNetwork(populationSize, populationList(:,socialNetworkSize));
-    % correct mismatch of assigned aquataince and socialNetworkSize
-        % refer to generate socialNetwork()
+    % correct mismatch of assigned aquaintance and socialNetworkSize
+        % refer to generateSocialNetwork()
     for person=1:populationSize
         populationList(person, socialNetworkSize) = sum(socialNetwork(person, :)>0);
     end
@@ -79,17 +82,20 @@ for sim=1:simulationRepeats
         toc;
         tic;
     end
+    
     %===== Seed in infected people
     for inf=1:startingInfected
         personIndex = randi(populationSize);
-        % check that random person is not vaccinated
-        while (populationList(personIndex, isVaccinated) == 1 || populationList(personIndex, isSick) == 1)
+        % check that random person is not vaccinated or
+            % already chosen as seed infected
+        while (populationList(personIndex, isVaccinated) == 1 ...
+                || populationList(personIndex, isSick) == 1)
             personIndex = randi(populationSize);
         end
         populationList(personIndex, :) = updateNewPatient(populationList(personIndex, :));
     end
 
-    %===== Data store reach of the virus at any given point
+    %===== Setup data storage for simulation results
     % row: person ID
     % column: day
     diseasePropagationData = zeros(populationSize, simulationDays+1);
@@ -103,7 +109,8 @@ for sim=1:simulationRepeats
         toc;
         tic;
     end
-    %===== Generate graph
+    
+    %===== Generate graph to visualize measles spread within our population
     if (displayGraph == 1)
         networkGraph = generateNetworkGraph(populationSize, populationList(:,socialNetworkSize), socialNetwork);
         networkPlot = plot(networkGraph);
@@ -122,28 +129,31 @@ for sim=1:simulationRepeats
     %============ Logic ============%
     %===============================%
     for day=1:simulationDays
+        % If there are no more cases of measles, stop the simulation
+            % instance
         if (endOfDaySickCount(day) == 0)
             break
         end
-
+        
         numberOfSickPeople = sum(populationList(:, isSick));
         listOfSickPeople = zeros(numberOfSickPeople, 1);
         sickPeopleFound = 0;
 
         %===== find the sick people in the population
-        % only their interaction matters regarding disease spread
+        % Only their interaction can change the number of sick people in
+        % the population
         for person=1:populationSize
             if (populationList(person, isSick) == 1)
-                % add sick person's ID to array to track
                 sickPeopleFound = sickPeopleFound + 1;
                 listOfSickPeople(sickPeopleFound) = person;
             end
         end
 
-        %===== determine who sick people have spread the disease to
+        %===== Determine who sick people have spread the disease to
         newSickPeople = findNewPatients(populationList, socialNetwork, listOfSickPeople);
 
-        %===== update info for people who have now contracted the disease
+        %===== Update newly infected people's data to reflect their
+            %condition
         for person=1:length(newSickPeople)
             newSickPersonIndex = newSickPeople(person);
             populationList(newSickPersonIndex, :) = updateNewPatient(populationList(newSickPersonIndex, :));
@@ -153,21 +163,26 @@ for sim=1:simulationRepeats
         %===============================%
         %========= End of day ==========%
         %===============================%
-        
+        % Update data of the people sick at the beginning of the day
+            % to reflect the passing of one day        
         for person=1:length(listOfSickPeople)
-            % update information of people sick at the end of the day
             sickPersonID = listOfSickPeople(person);
             populationList(sickPersonID, :) = updateExistingPatient(populationList(sickPersonID, :));
         end
         
+        %===== Determine behaviour of people closely related to people who
+            % have measles
+        
+        % Find closely related people
         paranoidPeople = getParanoidPeople(populationList, socialNetwork, listOfSickPeople);
+        % Send them to the hospital
         for person=1:length(paranoidPeople)
             personID = paranoidPeople(person);
             populationList(personID, :) = visitHospital(populationList(personID, :));
         end
 
 
-        %===== process/log data
+        %===== Process/log data
         % Store health state of the population
         diseasePropagationData(:, day+1) = populationList(:,isSick);
         endOfDaySickCount(day+1) = sum(populationList(:,isSick));
@@ -196,7 +211,7 @@ for sim=1:simulationRepeats
 
         avgNetSize = mean(populationList(:, socialNetworkSize));
         avgDailyInteraction = mean(populationList(:, socialLevel));
-        avgHospVisitChance = mean(populationList(:, hospitalVisit))*100;
+        avgHospVisitChance = mean(populationList(:, hospitalVisitChance))*100;
 
         peakSick = max(endOfDaySickCount);
         peakDay = 0;

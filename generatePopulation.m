@@ -1,4 +1,4 @@
-function population = generatePopulation(populationSize, percentVaccinated)
+function populationList = generatePopulation(populationSize, percentVaccinated)
 % Creates and returns a matrix that represents a population
 % Matrix of size: populationSize x variablesPerPerson
    
@@ -23,21 +23,19 @@ hospitalVisit = 6;
 hasSymptoms = 10;
 atHome = 11;
 % previouslyInfected = 12;
-personID = 13;
+index = 13;
 
 %===============================%
 %============ Setup ============%
 %===============================%
-% Population properties
-% startingSick = 0;
 
-%===== Initialise variable to hold data
+%===== Initialise variable to hold population data
 varCount = 13;
-population = zeros(populationSize, varCount);
+populationList = zeros(populationSize, varCount);
 
 %===== Get data pool used to randomise properties of person
 personDataRange = getPersonData(populationSize);
-p_age = 1;
+% p_age = 1;
 p_socialNetworkSize = 2;
 p_socialLevel = 3;
 p_visitHospital = 4;
@@ -49,22 +47,11 @@ for person=1:populationSize
      %%%% Consider using real population data
      % Age of person
      % distributed along expontential curve
-     mu = personDataRange(2,p_age)*0.3;    % 30percent of max age
-     population(person, age) = ceil(random('Exponential',mu));
+     mu = 30;    % 30yro
+     populationList(person, age) = ceil(random('Exponential',mu));
      
      % Seed vaccinated people into the population
-     population(person, isVaccinated) = rand() < percentVaccinated;
-     
-     % Seed sick people into the poplation
-     % need to move this out of the loop to avoid vaccinated people
-     % causing skews/reducing the number of seeded infected people
-%      chance = rand();
-%      % check that random person is not vaccinated
-%      if (chance < startingSick && population(person,isVaccinated)==0)
-%          population(person, isSick) = 1;
-%          population(person, :) = updateNewPatient(population(person,:));
-%          population(person, previouslyInfected) = 1;
-%      end
+     populationList(person, isVaccinated) = rand() < percentVaccinated;
 
      % Determine the size/number of people in person's social network
      % Assumed normally distributed
@@ -75,10 +62,9 @@ for person=1:populationSize
      while (sns <= 0)
          sns = ceil(normrnd(mu, sigma));
      end
-     population(person, socialNetworkSize) = sns;
+     populationList(person, socialNetworkSize) = sns;
      
-     % Determine average number of people person will 
-        % interact with on a daily basis
+     % Determine average number of people person will interact with on a daily basis
      % uniformly distributed
      % percentage of social network
      socLevel = 0;
@@ -87,7 +73,7 @@ for person=1:populationSize
      while (socLevel <= 0)
          socLevel = ceil(rand()*2 * sns * personDataRange(2, p_socialLevel));
      end
-     population(person, socialLevel) = socLevel;
+     populationList(person, socialLevel) = socLevel;
      
      
      % Probability person will visit the hospital given symptoms
@@ -96,17 +82,17 @@ for person=1:populationSize
      mu = personDataRange(1, p_visitHospital);
      sigma = personDataRange(2, p_visitHospital);
      chance = normrnd(mu, sigma); % may exceed 1 ~ 100%
-     population(person, hospitalVisit) = chance;
+     populationList(person, hospitalVisit) = chance;
           
      
      % Displaying symptoms
-     population(person, hasSymptoms) = 0;
+     populationList(person, hasSymptoms) = 0;
      
      % At home, prevents interaction and spread of the virus/disease
-     population(person, atHome) = 0;
+     populationList(person, atHome) = 0;
           
      % Index/ID
-     population(person, personID) = person;
+     populationList(person, index) = person;
      
 end
 
