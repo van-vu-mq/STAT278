@@ -12,7 +12,7 @@ function population = generatePopulation(populationSize, percentVaccinated)
         
 %===== Index mapping of variables of person data
 age = 1;
-isSick = 2;
+% isSick = 2;
 isVaccinated = 3;
 socialNetworkSize = 4;
 socialLevel = 5;
@@ -22,14 +22,14 @@ hospitalVisit = 6;
 % incubationPeriod = 9;
 hasSymptoms = 10;
 atHome = 11;
-previouslyInfected = 12;
+% previouslyInfected = 12;
 personID = 13;
 
 %===============================%
 %============ Setup ============%
 %===============================%
 % Population properties
-startingSick = 0;
+% startingSick = 0;
 
 %===== Initialise variable to hold data
 varCount = 13;
